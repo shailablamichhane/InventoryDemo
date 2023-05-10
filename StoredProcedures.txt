@@ -1,0 +1,250 @@
+USE [cellstock]
+GO
+/****** Object:  StoredProcedure [dbo].[insertCustomer]    Script Date: 4/1/2018 5:43:48 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE procedure [dbo].[insertCustomer]
+@custID integer,
+@custName varchar(40),
+@custEmail varchar(60),
+@custAddress varchar(120),
+@custPhone varchar(15),
+@custAddedBy integer
+AS
+    BEGIN
+        INSERT INTO [dbo].[customer] (id, name, email, address, phone_no, added_by)
+        VALUES (@custID, @custName, @custEmail, @custAddress, @custPhone, @custAddedBy)
+    END
+
+
+USE [cellstock]
+GO
+/****** Object:  StoredProcedure [dbo].[insertOrder]    Script Date: 4/1/2018 5:44:47 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE procedure [dbo].[insertOrder]
+@orderID integer,
+@order_prodID integer,
+@order_supplierID integer
+
+AS
+    BEGIN
+        INSERT INTO [dbo].[order] (id, product_id, supplied_by)
+        VALUES (@orderID,@order_prodID, @order_supplierID)
+    END
+
+
+USE [cellstock]
+GO
+/****** Object:  StoredProcedure [dbo].[insertProduct]    Script Date: 4/1/2018 5:44:56 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE procedure [dbo].[insertProduct]
+@productID integer,
+@productName varchar(40),
+@productManufacturer varchar(40),
+@productScreenRes varchar(10),
+@productScreenType varchar(10),
+@productReleaseDate DATE,
+@productGPU varchar(40),
+@productCPU varchar(40),
+@productPrice DECIMAL,
+@productAddedBy integer
+AS
+    BEGIN
+        INSERT INTO [dbo].[product] (id, name, manufacturer, screen_resolution, screen_type, release_date, gpu, cpu, unit_price, added_by)
+        VALUES (@productID, @productName, @productManufacturer, @productScreenRes, @productScreenType, @productReleaseDate, @productGPU, @productCPU, @productPrice, @productAddedBy)
+    END
+
+
+USE [cellstock]
+GO
+/****** Object:  StoredProcedure [dbo].[insertSupp]    Script Date: 4/1/2018 5:45:04 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE procedure [dbo].[insertSupp]
+@supplierID integer,
+@supplierName varchar(40),
+@supplierEmail varchar(60),
+@supplierPhone varchar(15),
+@supplierAddress varchar(120),
+@supplierAddedBy integer
+AS
+    BEGIN
+        INSERT INTO [dbo].[supplier] (id, name, email, phone_no, address, added_by)
+        VALUES (@supplierID, @supplierName, @supplierEmail, @supplierPhone, @supplierAddress, @supplierAddedBy)
+    END
+
+
+USE [cellstock]
+GO
+/****** Object:  StoredProcedure [dbo].[insertUser]    Script Date: 4/1/2018 5:45:16 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE procedure [dbo].[insertUser]
+@userID integer,
+@userName varchar(20),
+@userEmail varchar(80),
+@userPassword varchar(20),
+@userType varchar(120)
+AS
+    BEGIN
+        INSERT INTO [dbo].[user] (id, username, email, password, type)
+        VALUES (@userID, @userName, @userEmail, @userPassword, @userType)
+    END
+
+
+USE [cellstock]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_login]    Script Date: 4/1/2018 5:45:22 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[sp_login] 
+@userName varchar(50)='', @userPassword varchar(50)=''
+AS
+BEGIN
+IF EXISTS(SELECT username FROM [cellstock].dbo.[user] WHERE username = @userName AND password = @userPassword)
+BEGIN
+SELECT username FROM [cellstock].dbo.[user] WHERE username = @userName
+END
+END
+
+
+USE [cellstock]
+GO
+/****** Object:  StoredProcedure [dbo].[updateOrder]    Script Date: 4/1/2018 5:45:30 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE procedure [dbo].[updateOrder]
+@productID integer,
+@productSuppliedBy integer
+AS
+    BEGIN
+        INSERT INTO [dbo].[order] (id,product_id,supplied_by)
+        VALUES ('ORD02', @productID, @productSuppliedBy)
+    END
+
+
+USE [cellstock]
+GO
+/****** Object:  StoredProcedure [dbo].[insertCustomer]    Script Date: 4/8/2018 11:18:47 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE procedure [dbo].[insertStock]
+@prodID int,
+@initialQuantity int,
+@remainingQuantity int
+AS
+    BEGIN
+        INSERT INTO [dbo].[stock] (product_id, initial_quantity, remaining_quantity)
+        VALUES (@prodID, @initialQuantity, @remainingQuantity)
+    END
+
+
+USE [cellstock]
+GO
+/****** Object:  StoredProcedure [dbo].[insertCustomer]    Script Date: 4/8/2018 11:18:47 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE procedure [dbo].[insertSales]
+
+@quantity int,
+@totalPrice int,
+@salesDate date,
+@orderedBy int,
+@productID int,
+@stockID int
+AS
+    BEGIN
+        INSERT INTO [dbo].[sales] (quantity, total_price, [date], ordered_by, product_id,stock_id)
+        VALUES (@quantity, @totalPrice, @salesDate, @orderedBy, @productID, @stockID)
+    END
+
+
+
+
+
+
+
+
+QUERIES:
+
+
+Qn no 8 : 	SELECT s.ordered_by, c.name, s.id, s.issued_by, s.quantity, s.total_price, s.date, s.product_id, s.stock_id FROM sales s
+			JOIN customer c ON c.id = s.ordered_by
+			WHERE s.date >= DATEADD(DAY, -31, GETDATE()) AND c.name= (string)nameTxtBox.getText();
+
+Qn no 9 : 	SELECT s.id, s.product_id, s.remaining_quantity , p.name FROM stock s
+			JOIN product p ON s.product_id=p.id
+			WHERE s.remaining_quantity <= 10;
+
+Qn no 10: 	SELECT s.id, s.product_id, p.name, s.initial_quantity, s.remaining_quantity FROM stock s
+			JOIN product p ON s.product_id=p.id
+			WHERE s.date > DATEADD(DAY, -100, GETDATE())
+			EXCEPT 
+			SELECT s.id, s.product_id, p.name, s.initial_quantity, s.remaining_quantity FROM stock s
+			JOIN product p ON s.product_id=p.id
+			JOIN sales sal ON sal.product_id=p.id
+			WHERE sal.date < DATEADD(DAY, -100, GETDATE());
+
+Qn no 11:	SELECT s.id, s.product_id, p.name, s.remaining_quantity FROM stock s
+			JOIN product p ON s.product_id=p.id
+			WHERE s.remaining_quantity = 0;
+
+-- Qn no 12:	SELECT c.id , c.name, c.phone_no, c.email FROM customer c
+-- 			JOIN sales s ON c.id=s.ordered_by
+-- 			WHERE s.date < DATEADD(DAY, -31, GETDATE());
+Qn no 12:
+			SELECT id, name
+			FROM(
+				(
+					SELECT id AS custId 
+					FROM customer
+				)
+			EXCEPT(
+	  				SELECT DISTINCT ordered_by AS custId
+	  				FROM sales 
+	  				WHERE date > DATEADD(DAY, -31, GETDATE()) 
+	  				)
+				) sal
+				JOIN customer c 
+				ON c.id = sal.custId
+
+Qn no 13:	SELECT stok.product_id, p.name FROM stock stok
+			JOIN sales s ON p.id=s.product_id
+			JOIN product p ON p.id=stok.product_id
+			WHERE s.date > DATEADD(DAY, -31, GETDATE());
